@@ -13,7 +13,6 @@ const TOKEN = process.env.TOKEN_API;
 const bot = new TelegramBot(TOKEN, {polling: true});
 
 
-const archivoPDF = './oscar.pdf';
 const dDir = path.join(__dirname, 'downloads');
 if (!fs.existsSync(dDir)) {
     fs.mkdirSync(dDir);
@@ -40,7 +39,7 @@ bot.on('message', async (msg) => {
         });
         console.log(`Archivo guardado como ${fileName}`);
         // Enviar un mensaje de confirmación al usuario
-        bot.sendMessage(chatId, `Se recibió el archivo ${fileName}`);
+        await bot.sendMessage(chatId, `Se recibió el archivo ${fileName}`);
 
 
         readFile(path.join(dDir,fileName))

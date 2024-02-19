@@ -31,10 +31,12 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId) => {
     await setTimeout(5000);
 
 
+
     const employeeID = await getEmployeeID(rut, page);
 
     if (!employeeID) {
-        console.error('id usuario no encontrado')
+        console.error('id usuario no encontrado');
+        bot.sendMessage(chatId, 'id usuario no encontrado');
         return false;
     }
 
@@ -53,15 +55,21 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId) => {
         const fuera = await page.waitForSelector('#wrapper > div.main-panel.mega > div.rex-content.container-fluid > div > form > div.card-body > div:nth-child(4) > div:nth-child(3)');
         await fuera.click();
         await setTimeout(2000);
+        const guardarMovimiento = await page.waitForSelector('#wrapper > div.main-panel.mega > div.rex-content.container-fluid > div > form > div.card-footer.d-flex.flex-centered > input');
+        await guardarMovimiento.click();
+        await page.waitForNavigation();
+        await setTimeout(5000);
+
         bot.sendMessage(chatId, `Vacación Nro ${contador}: creada`);
         console.log(`Vacación Nro ${contador}: creada`)
+        contador++;
     }
 
     await browser.close();
 };
 
 async function getEmployeeID(rut, page) {
-    const regex = new RegExp(`/remuneraciones/es-CL/rexcpe/empleados/contrato_activo/${rut}/contratos/(\\d+)`);
+    const regex = new RegExp(`/remuneraciones/es-CL/rexcpe/empleados/${rut}/vacaciones/(\\d+)`);
     const links = await page.$$('a[href*="/remuneraciones/es-CL/rexcpe/empleados/"]');
     let numeroVacaciones;
 
