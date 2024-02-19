@@ -1,0 +1,21 @@
+{
+  "name": "pdfreader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "kevinone007",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.4",
+    "node-telegram-bot-api": "^0.64.0",
+    "pdf-parse": "^1.1.1",
+    "pdf2json": "^3.0.5",
+    "pdfjs-dist": "^4.0.379",
+    "puppeteer": "^22.1.0",
+    "validar-rut": "^3.1.0"
+  }
+}
