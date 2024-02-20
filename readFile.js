@@ -32,6 +32,7 @@ const readFile = async (file) => {
         console.error('Error al leer el PDF:', error);
         return {
             rut: null,
+            progresivas: null,
             periodos: []
         };
     }
