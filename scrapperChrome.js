@@ -76,7 +76,6 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId) => {
                 return false;
             }
         } catch (error) {
-            bot.sendMessage(chatId, `Ingresando el periodo ${contador} sin errores.`);
         }
 
         //await setTimeout(5000);

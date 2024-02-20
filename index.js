@@ -46,7 +46,7 @@ bot.on('message', async (msg) => {
         readFile(path.join(dDir,fileName))
             .then(resultado => {
                 const {rut, progresivasQty, periodos} = resultado;
-                bot.sendMessage(chatId, `Se procesaran ${periodos.length} vacaciones y ${periodos.length-progresivasQty} progresivas.`);
+                bot.sendMessage(chatId, `Se procesaran ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
                 if(progresivasQty>0){
                     markProgressiveTransactions(periodos,progresivasQty)
                 }

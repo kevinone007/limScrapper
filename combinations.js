@@ -28,27 +28,32 @@ const findCombination = (arr, total) => {
     return result;
 };
 
-const markProgressiveTransactions = (periodos, n) => {
-    const diasList = periodos.map(periodo => periodo.dias);
-    const { combination, indices } = findCombination(diasList, n);
+const markProgressiveTransactions = async (periodos, n) => {
+    return new Promise((resolve, reject) => {
+        const diasList = periodos.map(periodo => periodo.dias);
+        const { combination, indices } = findCombination(diasList, n);
 
-    if (combination.length > 0) {
-        const markedIndexes = new Set(); // Conjunto para almacenar los índices de las transacciones marcadas
+        if (combination.length > 0) {
+            const markedIndexes = new Set(); // Conjunto para almacenar los índices de las transacciones marcadas
 
-        indices.forEach(index => {
-            const periodo = periodos[index];
-            if (!markedIndexes.has(index)) {
-                periodo.isProgresiva = true;
-                markedIndexes.add(index); // Marcar la posición de la transacción como procesada
-            }
-        });
+            indices.forEach(index => {
+                const periodo = periodos[index];
+                if (!markedIndexes.has(index)) {
+                    periodo.isProgresiva = true;
+                    markedIndexes.add(index); // Marcar la posición de la transacción como procesada
+                }
+            });
 
-        console.log("La primera combinación de montos que suman al pago ha sido marcada.");
-        console.log("Transacciones marcadas correctamente.");
-    } else {
-        console.log("No se encontró ninguna combinación que sume al pago.");
-    }
+            console.log("La primera combinación de montos que suman al pago ha sido marcada.");
+            console.log("Transacciones marcadas correctamente.");
+            resolve(); // Resolver la promesa si se completó el marcado de transacciones
+        } else {
+            console.log("No se encontró ninguna combinación que sume al pago.");
+            reject(new Error("No se encontró ninguna combinación que sume al pago.")); // Rechazar la promesa si no se encontró ninguna combinación
+        }
+    });
 };
+
 
 
 
