@@ -31,7 +31,6 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId) => {
     await setTimeout(5000);
 
 
-
     const employeeID = await getEmployeeID(rut, page);
 
     if (!employeeID) {
@@ -48,7 +47,7 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId) => {
         const fecIniSelector = await page.waitForSelector('#id_fechaInic, ::-p-xpath(//*[@id="id_fechaInic"]), :scope >>> #id_fechaInic');
         await setTimeout(500);
         await daysSelector.type(periodo.dias);
-        await fecIniSelector.click({ clickCount: 3 });
+        await fecIniSelector.click({clickCount: 3});
         await setTimeout(1500);
         await fecIniSelector.press('Backspace');
         await fecIniSelector.type(periodo.desde);
@@ -58,14 +57,36 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId) => {
         const guardarMovimiento = await page.waitForSelector('#wrapper > div.main-panel.mega > div.rex-content.container-fluid > div > form > div.card-footer.d-flex.flex-centered > input');
         await guardarMovimiento.click();
         await page.waitForNavigation();
-        await setTimeout(5000);
+        let errorMessage
+        try {
+            await page.waitForSelector('#wrapper > div.main-panel.mega > div.rex-content.container-fluid > div.alert.alert-danger > strong', {timeout: 1000});
+            errorMessage = await page.evaluate(() => {
+                return document.querySelector('#wrapper > div.main-panel.mega > div.rex-content.container-fluid > div.alert.alert-danger > strong').innerText;
+            });
 
-        bot.sendMessage(chatId, `Vacación Nro ${contador}: creada`);
-        console.log(`Vacación Nro ${contador}: creada`)
+            if(errorMessage){
+                const guardarMovimiento2 = await page.waitForSelector('#wrapper > div.main-panel.mega > div.rex-content.container-fluid > div > form > div.card-footer.d-flex.flex-centered > input');
+                await guardarMovimiento2.click();
+                await page.waitForNavigation()
+            }
+            if(errorMessage === 'La fecha de retorno ingresada no es válida'){
+                bot.sendMessage(chatId, `error: ${errorMessage}`);
+                console.log(`error: ${errorMessage}`);
+                await browser.close();
+                return false;
+            }
+        } catch (error) {
+            bot.sendMessage(chatId, `Ingresando el periodo ${contador} sin errores.`);
+        }
+
+        //await setTimeout(5000);
+        bot.sendMessage(chatId, (errorMessage)?`Vacación Nro ${contador}: ${errorMessage}.`:`Vacación Nro ${contador}: creada.`);
+        console.log((errorMessage)?`Vacación Nro ${contador}: ${errorMessage}.`:`Vacación Nro ${contador}: creada.`);
         contador++;
     }
 
     await browser.close();
+    return true;
 };
 
 async function getEmployeeID(rut, page) {

@@ -1,23 +1,56 @@
-// Suponiendo que tienes un módulo "combinationsUtils" que contiene las funciones necesarias
+const findCombination = (arr, total) => {
+    let result = { combination: [], indices: [] };
 
-function main() {
-    // Definir la lista de montos y el pago
-    const montos = [
-        '5', '10', '5', '10', '2', '3', '10', '5'
-    ].map(val => new Decimal(val));
-    const pago = new Decimal('35');
+    const backtrack = (startIndex, target, path, indices) => {
+        if (target === 0) {
+            result.combination = [...path];
+            result.indices = [...indices];
+            return true; // Indicar que se ha encontrado una combinación exitosa
+        }
 
-    // Buscar combinaciones de montos que sumen al valor del pago
-    for (let i = 1; i <= montos.length; i++) {
-        const combos = combinations(montos, i);
-        for (const combo of combos) {
-            if (sum(combo).cmp(pago) === 0) {
-                console.log("La combinación de montos que suman al pago es: " + combo.join(', '));
-                return;
+        for (let i = startIndex; i < arr.length; i++) {
+            if (target - arr[i] >= 0) {
+                path.push(arr[i]);
+                indices.push(i);
+                // Si se encuentra una combinación exitosa, detener la búsqueda
+                if (backtrack(i + 1, target - arr[i], path, indices)) {
+                    return true;
+                }
+                path.pop();
+                indices.pop();
             }
         }
-    }
-    console.log("No se encontró una combinación de montos que sumen al pago");
-}
+        return false; // Indicar que no se encontró una combinación exitosa
+    };
 
-main();
+    backtrack(0, total, [], []);
+
+    return result;
+};
+
+const markProgressiveTransactions = (periodos, n) => {
+    const diasList = periodos.map(periodo => periodo.dias);
+    const { combination, indices } = findCombination(diasList, n);
+
+    if (combination.length > 0) {
+        const markedIndexes = new Set(); // Conjunto para almacenar los índices de las transacciones marcadas
+
+        indices.forEach(index => {
+            const periodo = periodos[index];
+            if (!markedIndexes.has(index)) {
+                periodo.isProgresiva = true;
+                markedIndexes.add(index); // Marcar la posición de la transacción como procesada
+            }
+        });
+
+        console.log("La primera combinación de montos que suman al pago ha sido marcada.");
+        console.log("Transacciones marcadas correctamente.");
+    } else {
+        console.log("No se encontró ninguna combinación que sume al pago.");
+    }
+};
+
+
+
+
+module.exports = {markProgressiveTransactions};

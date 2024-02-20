@@ -1,5 +1,6 @@
 const {readFile} = require('./readFile.js');
 const {scrapperChrome} = require('./scrapperChrome.js');
+const {markProgressiveTransactions} = require('./combinations.js');
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const path = require('path');
@@ -44,20 +45,25 @@ bot.on('message', async (msg) => {
 
         readFile(path.join(dDir,fileName))
             .then(resultado => {
-                const {rut, periodos} = resultado;
-                bot.sendMessage(chatId, `Se procesaran ${periodos.length} vacaciones.`);
+                const {rut, progresivasQty, periodos} = resultado;
+                bot.sendMessage(chatId, `Se procesaran ${periodos.length} vacaciones y ${periodos.length-progresivasQty} progresivas.`);
+                if(progresivasQty>0){
+                    markProgressiveTransactions(periodos,progresivasQty)
+                }
                 return scrapperChrome(url, user, pass, rut, periodos, bot, chatId);
             })
             .then(() => {
+                bot.sendMessage(chatId, `Proceso finalizado`);
                 console.log('Scraping completado');
             })
             .catch(error => {
                 console.error('Ocurrió un error:', error);
+                bot.sendMessage(chatId, `se presentó un error: ${error}`);
                 process.exit(1);
             });
     } else {
         // Si el mensaje no contiene un archivo, responder con un mensaje predeterminado
-        bot.sendMessage(chatId, 'Por favor, envía un archivo (PDF) para procesar.');
+        await bot.sendMessage(chatId, 'Por favor, envía un archivo (PDF) para procesar.');
 
     }
 });
