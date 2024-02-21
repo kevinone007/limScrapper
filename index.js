@@ -33,7 +33,7 @@ bot.on('message', async (msg) => {
     }
 
     if (msg.text === '/start') {
-        await bot.sendMessage(chatId, '¡Hola! ¿Has cerrado sesión? Responde Si o No.');
+        await bot.sendMessage(chatId, '¡Hola! ¿Has cerrado sesión en RESMAX? Responde Si o No.');
         userState[chatId] = { started: true };
 
     } else if (userState[chatId] && userState[chatId].started) {
@@ -74,28 +74,50 @@ bot.on('document', async (msg) => {
 
 
 async function processPDF(chatId, fileName) {
-    let tiempoInicioReadFile;
+    let tiempoInicioReadFile = Date.now();
     let tiempoInicioMarkProgressiveTransactions;
     let tiempoInicioScrapper;
 
-    try {
-        const resultado = await readFile(path.join(dDir, fileName));
-        tiempoInicioReadFile = Date.now();
-        const {rut, progresivasQty, periodos} = resultado;
-        await bot.sendMessage(chatId, `Se procesarán ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
+    readFile(path.join(dDir, fileName))
+        .then(async resultado => {
+            const {rut, progresivasQty, periodos} = resultado;
+            await bot.sendMessage(chatId, `Se procesarán ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
+            console.log(`Se procesarán ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
+            if (progresivasQty > 0) {
+                tiempoInicioMarkProgressiveTransactions = Date.now();
+                return markProgressiveTransactions(periodos, progresivasQty)
+                    .then(() => resultado);
+            } else {
+                return resultado;
+            }
+        })
+        .then(async resultado => {
+            const {rut, periodos} = resultado;
+            tiempoInicioScrapper = Date.now();
+            return scrapperChrome(url, user, pass, rut, periodos, bot, chatId);
+        })
+        .then(async () => {
+            const tiempoFinScrapper = Date.now();
 
-        if (progresivasQty > 0) {
-            tiempoInicioMarkProgressiveTransactions = Date.now();
-        }
+            const segundosReadFile = Math.floor((tiempoInicioMarkProgressiveTransactions - tiempoInicioReadFile) / 1000);
+            const segundosMarkProgressiveTransactions = Math.floor((tiempoInicioScrapper - tiempoInicioMarkProgressiveTransactions) / 1000);
+            const segundosScrapper = Math.floor((tiempoFinScrapper - tiempoInicioScrapper) / 1000);
 
-        tiempoInicioScrapper = Date.now();
-        await scrapperChrome(url, user, pass, rut, periodos, bot, chatId);
+            await bot.sendMessage(chatId, `Tiempo de ejecución de lecuta PDF: ${segundosReadFile} seg.`);
+            console.log( `Tiempo de ejecución de lecuta PDF: ${segundosReadFile} seg.`);
+            await bot.sendMessage(chatId, `Tiempo de ejecución de busqueda de combinación: ${segundosMarkProgressiveTransactions} seg.`);
+            console.log( `Tiempo de ejecución de busqueda de combinación: ${segundosMarkProgressiveTransactions} seg.`);
+            await bot.sendMessage(chatId, `Tiempo de ejecución de Robot RES+: ${segundosScrapper} seg.`);
+            console.log( `Tiempo de ejecución de Robot RES+: ${segundosScrapper} seg.`);
 
-        const tiempoFinScrapper = Date.now();
-    } catch (error) {
-        console.error('Ocurrió un error:', error);
-        await bot.sendMessage(chatId, `Se presentó un error: ${error}`);
-    }
+            console.log('Scraping completado');
+        })
+        .catch(async error => {
+            console.error('Ocurrió un error:', error);
+            await bot.sendMessage(chatId, `Se presentó un error: ${error}`);
+            process.exit(1);
+        });
+
 }
 
 console.log('Bot is running...');

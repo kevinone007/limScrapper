@@ -42,6 +42,7 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId) => {
 
     let contador = 1;
     for (const periodo of periodos) {
+        let inicioVacacion = Date.now();
         await page.goto(`https://lim.rexmas.com/remuneraciones/es-CL/rexcpe/empleados/${rut}/vacaciones/${employeeID}/crear`);
         const daysSelector = await page.waitForSelector('#id_dias, ::-p-xpath(//*[@id="id_dias"]), :scope >>> #id_dias');
         const fecIniSelector = await page.waitForSelector('#id_fechaInic, ::-p-xpath(//*[@id="id_fechaInic"]), :scope >>> #id_fechaInic');
@@ -70,17 +71,17 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId) => {
                 await page.waitForNavigation()
             }
             if(errorMessage === 'La fecha de retorno ingresada no es válida'){
-                bot.sendMessage(chatId, `error: ${errorMessage}`);
+                await bot.sendMessage(chatId, `error: ${errorMessage}`);
                 console.log(`error: ${errorMessage}`);
                 await browser.close();
                 return false;
             }
         } catch (error) {
         }
-
+        const segundos = Math.floor(Date.now() - inicioVacacion / 1000);
         //await setTimeout(5000);
-        bot.sendMessage(chatId, (errorMessage)?`Vacación Nro ${contador}: ${errorMessage}.`:`Vacación Nro ${contador}: creada.`);
-        console.log((errorMessage)?`Vacación Nro ${contador}: ${errorMessage}.`:`Vacación Nro ${contador}: creada.`);
+        await bot.sendMessage(chatId, (errorMessage)?`Vacación Nro ${contador}: ${errorMessage} en ${segundos} seg.`:`Vacación Nro ${contador}: creada en ${segundos} seg.`);
+        console.log((errorMessage)?`Vacación Nro ${contador}: ${errorMessage} en ${segundos} seg.`:`Vacación Nro ${contador}: creada en ${segundos} seg.`);
         contador++;
     }
 
