@@ -1,14 +1,26 @@
 const puppeteer = require('puppeteer');
 const {setTimeout} = require('timers/promises');
 
-const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId) => {
-    const browser = await puppeteer.launch({
-        headless: false,
+const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId, env) => {
+    let browser;
+    if(env === 'QA'){
+        browser = await puppeteer.launch({
+        headless: false, //solo para ambiente local
         args: [
             '--disable-web-security',
             '--enable-javascript'
         ]
     });
+    }else{
+        browser = await puppeteer.launch({
+            //headless: false, //solo para ambiente local
+            args: [
+                '--disable-web-security',
+                '--enable-javascript'
+            ]
+        });
+    }
+    console.log('levantando browser')
     const page = await browser.newPage();
     const timeout = 60000;
     page.setDefaultTimeout(timeout);

@@ -11,6 +11,7 @@ const user = process.env.USER;
 const pass = process.env.PASS;
 const TOKEN = process.env.TOKEN_API;
 const permited_users = process.env.PERMITED_USERS;
+const env = process.env.ENV;
 
 const bot = new TelegramBot(TOKEN, {polling: true});
 
@@ -94,7 +95,7 @@ async function processPDF(chatId, fileName) {
         .then(async resultado => {
             const {rut, periodos} = resultado;
             tiempoInicioScrapper = Date.now();
-            return scrapperChrome(url, user, pass, rut, periodos, bot, chatId);
+            return scrapperChrome(url, user, pass, rut, periodos, bot, chatId, env);
         })
         .then(async () => {
             const tiempoFinScrapper = Date.now();
