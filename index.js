@@ -78,7 +78,7 @@ async function processPDF(chatId, fileName) {
     let tiempoInicioMarkProgressiveTransactions;
     let tiempoInicioScrapper;
 
-    readFile(path.join(dDir, fileName))
+    await readFile(path.join(dDir, fileName))
         .then(async resultado => {
             const {rut, progresivasQty, periodos} = resultado;
             await bot.sendMessage(chatId, `Se procesarán ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
@@ -103,12 +103,12 @@ async function processPDF(chatId, fileName) {
             const segundosMarkProgressiveTransactions = Math.floor((tiempoInicioScrapper - tiempoInicioMarkProgressiveTransactions) / 1000);
             const segundosScrapper = Math.floor((tiempoFinScrapper - tiempoInicioScrapper) / 1000);
 
-            await bot.sendMessage(chatId, `Tiempo de ejecución de lecuta PDF: ${segundosReadFile} seg.`);
-            console.log( `Tiempo de ejecución de lecuta PDF: ${segundosReadFile} seg.`);
-            await bot.sendMessage(chatId, `Tiempo de ejecución de busqueda de combinación: ${segundosMarkProgressiveTransactions} seg.`);
-            console.log( `Tiempo de ejecución de busqueda de combinación: ${segundosMarkProgressiveTransactions} seg.`);
+            await bot.sendMessage(chatId, `Tiempo de ejecución de lectura PDF: ${segundosReadFile} seg.`);
+            console.log(`Tiempo de ejecución de lectura PDF: ${segundosReadFile} seg.`);
+            await bot.sendMessage(chatId, `Tiempo de ejecución de búsqueda de combinación: ${segundosMarkProgressiveTransactions} seg.`);
+            console.log(`Tiempo de ejecución de búsqueda de combinación: ${segundosMarkProgressiveTransactions} seg.`);
             await bot.sendMessage(chatId, `Tiempo de ejecución de Robot RES+: ${segundosScrapper} seg.`);
-            console.log( `Tiempo de ejecución de Robot RES+: ${segundosScrapper} seg.`);
+            console.log(`Tiempo de ejecución de Robot RES+: ${segundosScrapper} seg.`);
 
             console.log('Scraping completado');
         })
