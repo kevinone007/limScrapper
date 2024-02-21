@@ -16,7 +16,8 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId, env) 
             //headless: false, //solo para ambiente local
             args: [
                 '--disable-web-security',
-                '--enable-javascript'
+                '--enable-javascript',
+                '--no-sandbox'
             ]
         });
     }
