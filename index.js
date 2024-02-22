@@ -61,7 +61,7 @@ bot.on('document', async (msg) => {
         const fileNameTelegram = fileDetails.file_path.split('/').pop();
 
         await bot.downloadFile(fileId, dDir);
-        fs.rename(path.join(dDir, fileNameTelegram), path.join(dDir, fileName), (err) => {
+        await fs.rename(path.join(dDir, fileNameTelegram), path.join(dDir, fileName), (err) => {
             if (err) {
                 console.error('Error al renombrar el archivo:', err);
             }

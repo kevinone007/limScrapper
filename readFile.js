@@ -23,6 +23,7 @@ const readFile = async (file) => {
             return {dias, desde, hasta, obs, isProgresiva};
         });
 
+        console.log(`Procesando el RUT: ${rut}`)
         return {
             rut: rut,
             progresivasQty: progresivas,
