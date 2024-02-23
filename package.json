@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "sudo apt-get install -y chromium-browser"
+    "postinstall": "sudo apt-get install chromium-browser"
   },
   "keywords": [],
   "author": "kevinone007",
