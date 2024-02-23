@@ -34,22 +34,22 @@ const markProgressiveTransactions = async (periodos, n) => {
         const { combination, indices } = findCombination(diasList, n);
 
         if (combination.length > 0) {
-            const markedIndexes = new Set(); // Conjunto para almacenar los índices de las transacciones marcadas
+            const markedIndexes = new Set();
 
             indices.forEach(index => {
                 const periodo = periodos[index];
                 if (!markedIndexes.has(index)) {
                     periodo.isProgresiva = true;
-                    markedIndexes.add(index); // Marcar la posición de la transacción como procesada
+                    markedIndexes.add(index);
                 }
             });
 
             console.log("La primera combinación de montos que suman al pago ha sido marcada.");
             console.log("Transacciones marcadas correctamente.");
-            resolve(); // Resolver la promesa si se completó el marcado de transacciones
+            resolve();
         } else {
             console.log("No se encontró ninguna combinación que sume al pago.");
-            reject(new Error("No se encontró ninguna combinación que sume al pago.")); // Rechazar la promesa si no se encontró ninguna combinación
+            resolve();
         }
     });
 };
