@@ -1,6 +1,7 @@
 const {readFile} = require('./readFile.js');
 const {scrapperChrome} = require('./scrapperChrome.js');
 const {markProgressiveTransactions} = require('./combinations.js');
+const {takeTime, calculateTime} = require('./util/util');
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const path = require('path');
@@ -75,7 +76,7 @@ bot.on('document', async (msg) => {
 
 
 async function processPDF(chatId, fileName) {
-    let tiempoInicioReadFile = Date.now();
+    let tiempoInicioReadFile = await takeTime;
     let tiempoInicioMarkProgressiveTransactions;
     let tiempoInicioScrapper;
 
@@ -85,7 +86,7 @@ async function processPDF(chatId, fileName) {
             await bot.sendMessage(chatId, `Se procesarán ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
             console.log(`Se procesarán ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
             if (progresivasQty > 0) {
-                tiempoInicioMarkProgressiveTransactions = Date.now();
+                tiempoInicioMarkProgressiveTransactions = await takeTime;
                 return markProgressiveTransactions(periodos, progresivasQty)
                     .then(() => resultado);
             } else {
@@ -94,15 +95,15 @@ async function processPDF(chatId, fileName) {
         })
         .then(async resultado => {
             const {rut, periodos} = resultado;
-            tiempoInicioScrapper = Date.now();
+            tiempoInicioScrapper = await takeTime;
             return scrapperChrome(url, user, pass, rut, periodos, bot, chatId, env);
         })
         .then(async () => {
-            const tiempoFinScrapper = Date.now();
+            const tiempoFinScrapper = await takeTime;
 
-            const segundosReadFile = Math.floor((tiempoInicioMarkProgressiveTransactions - tiempoInicioReadFile) / 1000);
-            const segundosMarkProgressiveTransactions = Math.floor((tiempoInicioScrapper - tiempoInicioMarkProgressiveTransactions) / 1000);
-            const segundosScrapper = Math.floor((tiempoFinScrapper - tiempoInicioScrapper) / 1000);
+            const segundosReadFile = await calculateTime(tiempoInicioMarkProgressiveTransactions - tiempoInicioReadFile);
+            const segundosMarkProgressiveTransactions = await calculateTime(tiempoInicioScrapper - tiempoInicioMarkProgressiveTransactions);
+            const segundosScrapper = await calculateTime(tiempoFinScrapper - tiempoInicioScrapper);
 
             await bot.sendMessage(chatId, `Tiempo de ejecución de lectura PDF: ${segundosReadFile} seg.`);
             console.log(`Tiempo de ejecución de lectura PDF: ${segundosReadFile} seg.`);

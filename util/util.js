@@ -1,4 +1,4 @@
-function calcularDigitoVerificador(rut) {
+async function calcularDigitoVerificador(rut) {
     // Paso 1: Convertir el RUT a un array de dígitos y reversarlo
     const digitos = rut.toString().split('').reverse().map(d => parseInt(d));
 
@@ -24,6 +24,15 @@ function calcularDigitoVerificador(rut) {
     }
 }
 
+async function takeTime(){
+    return Date.now();
+}
+async function calculateTime(ini, fin) {
+    return Math.floor((ini - fin) / 1000);
+}
+
 module.exports = {
-    calcularDigitoVerificador
+    calcularDigitoVerificador,
+    takeTime,
+    calculateTime
 };

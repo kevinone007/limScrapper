@@ -8,7 +8,7 @@ const readFile = async (file) => {
 
         // Extraer el número (rut)
         const rutMatch = data.text.match(/Nombre\s*:\s*(\d+)/);
-        const rut = (rutMatch && rutMatch[1] ? rutMatch[1] : null) + '-' + calcularDigitoVerificador(rutMatch[1]);
+        const rut = (rutMatch && rutMatch[1] ? rutMatch[1] : null) + '-' + await calcularDigitoVerificador(rutMatch[1]);
         const progresivasMatch = data.text.match(/Progresivas \(\+\)Adicionales \(\+\)\n\d+\.00(\d+\.00)/);
         const progresivas = (progresivasMatch && progresivasMatch[1] ? progresivasMatch[1] : null);
         // Extraer los periodos de vacaciones

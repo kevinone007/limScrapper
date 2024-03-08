@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const {setTimeout} = require('timers/promises');
+const {takeTime, calculateTime} = require('./util/util');
 
 const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId, env) => {
     let browser;
@@ -55,7 +56,7 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId, env) 
 
     let contador = 1;
     for (const periodo of periodos) {
-        let inicioVacacion = Date.now();
+        let inicioVacacion = await takeTime();
         await page.goto(`https://lim.rexmas.com/remuneraciones/es-CL/rexcpe/empleados/${rut}/vacaciones/${employeeID}/crear`);
         const daysSelector = await page.waitForSelector('#id_dias, ::-p-xpath(//*[@id="id_dias"]), :scope >>> #id_dias');
         const fecIniSelector = await page.waitForSelector('#id_fechaInic, ::-p-xpath(//*[@id="id_fechaInic"]), :scope >>> #id_fechaInic');
@@ -91,7 +92,7 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId, env) 
             }
         } catch (error) {
         }
-        const segundos = Math.floor((Date.now() - inicioVacacion) / 1000);
+        const segundos = await calculateTime(await takeTime() - inicioVacacion);
         //await setTimeout(5000);
         await bot.sendMessage(chatId, (errorMessage)?`Vacación Nro ${contador}: ${errorMessage} en ${segundos} seg.`:`Vacación Nro ${contador}: creada en ${segundos} seg.`);
         console.log((errorMessage)?`Vacación Nro ${contador}: ${errorMessage} en ${segundos} seg.`:`Vacación Nro ${contador}: creada en ${segundos} seg.`);
