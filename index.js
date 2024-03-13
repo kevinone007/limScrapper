@@ -76,7 +76,7 @@ bot.on('document', async (msg) => {
 
 
 async function processPDF(chatId, fileName) {
-    let tiempoInicioReadFile = await takeTime;
+    let tiempoInicioReadFile = await takeTime();
     let tiempoInicioMarkProgressiveTransactions;
     let tiempoInicioScrapper;
 
@@ -86,7 +86,7 @@ async function processPDF(chatId, fileName) {
             await bot.sendMessage(chatId, `Se procesarán ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
             console.log(`Se procesarán ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
             if (progresivasQty > 0) {
-                tiempoInicioMarkProgressiveTransactions = await takeTime;
+                tiempoInicioMarkProgressiveTransactions = await takeTime();
                 return markProgressiveTransactions(periodos, progresivasQty)
                     .then(() => resultado);
             } else {
@@ -95,11 +95,11 @@ async function processPDF(chatId, fileName) {
         })
         .then(async resultado => {
             const {rut, periodos} = resultado;
-            tiempoInicioScrapper = await takeTime;
+            tiempoInicioScrapper = await takeTime();
             return scrapperChrome(url, user, pass, rut, periodos, bot, chatId, env);
         })
         .then(async () => {
-            const tiempoFinScrapper = await takeTime;
+            const tiempoFinScrapper = await takeTime();
 
             const segundosReadFile = await calculateTime(tiempoInicioMarkProgressiveTransactions - tiempoInicioReadFile);
             const segundosMarkProgressiveTransactions = await calculateTime(tiempoInicioScrapper - tiempoInicioMarkProgressiveTransactions);

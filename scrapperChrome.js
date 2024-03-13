@@ -92,7 +92,8 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId, env) 
             }
         } catch (error) {
         }
-        const segundos = await calculateTime(await takeTime() - inicioVacacion);
+        const finVacacion = await takeTime()
+        const segundos = await calculateTime(finVacacion - inicioVacacion);
         //await setTimeout(5000);
         await bot.sendMessage(chatId, (errorMessage)?`Vacación Nro ${contador}: ${errorMessage} en ${segundos} seg.`:`Vacación Nro ${contador}: creada en ${segundos} seg.`);
         console.log((errorMessage)?`Vacación Nro ${contador}: ${errorMessage} en ${segundos} seg.`:`Vacación Nro ${contador}: creada en ${segundos} seg.`);
