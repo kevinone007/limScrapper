@@ -28,7 +28,7 @@ async function takeTime(){
     return Date.now();
 }
 async function calculateTime(ini, fin) {
-    return Math.floor((ini - fin) / 1000);
+    return Math.floor((fin - ini) / 1000);
 }
 
 module.exports = {

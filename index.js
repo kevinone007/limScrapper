@@ -79,6 +79,7 @@ async function processPDF(chatId, fileName) {
     let tiempoInicioReadFile = await takeTime();
     let tiempoInicioMarkProgressiveTransactions;
     let tiempoInicioScrapper;
+    let tiempoFinScrapper;
 
     await readFile(path.join(dDir, fileName))
         .then(async resultado => {
@@ -87,23 +88,17 @@ async function processPDF(chatId, fileName) {
             console.log(`Se procesarán ${periodos.length} vacaciones y ${progresivasQty} progresivas.`);
             if (progresivasQty > 0) {
                 tiempoInicioMarkProgressiveTransactions = await takeTime();
-                return markProgressiveTransactions(periodos, progresivasQty)
-                    .then(() => resultado);
-            } else {
-                return resultado;
+                await markProgressiveTransactions(periodos, progresivasQty);
             }
-        })
-        .then(async resultado => {
-            const {rut, periodos} = resultado;
             tiempoInicioScrapper = await takeTime();
             return scrapperChrome(url, user, pass, rut, periodos, bot, chatId, env);
         })
         .then(async () => {
-            const tiempoFinScrapper = await takeTime();
+            tiempoFinScrapper = await takeTime();
 
-            const segundosReadFile = await calculateTime(tiempoInicioMarkProgressiveTransactions - tiempoInicioReadFile);
-            const segundosMarkProgressiveTransactions = await calculateTime(tiempoInicioScrapper - tiempoInicioMarkProgressiveTransactions);
-            const segundosScrapper = await calculateTime(tiempoFinScrapper - tiempoInicioScrapper);
+            const segundosReadFile = await calculateTime(tiempoInicioReadFile, tiempoInicioMarkProgressiveTransactions);
+            const segundosMarkProgressiveTransactions = await calculateTime(tiempoInicioMarkProgressiveTransactions, tiempoInicioScrapper);
+            const segundosScrapper = await calculateTime(tiempoInicioScrapper, tiempoFinScrapper);
 
             await bot.sendMessage(chatId, `Tiempo de ejecución de lectura PDF: ${segundosReadFile} seg.`);
             console.log(`Tiempo de ejecución de lectura PDF: ${segundosReadFile} seg.`);
@@ -119,7 +114,6 @@ async function processPDF(chatId, fileName) {
             await bot.sendMessage(chatId, `Se presentó un error: ${error}`);
             process.exit(1);
         });
-
 }
 
 console.log('Bot is running...');
