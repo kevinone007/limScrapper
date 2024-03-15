@@ -89,6 +89,8 @@ async function processPDF(chatId, fileName) {
             if (progresivasQty > 0) {
                 tiempoInicioMarkProgressiveTransactions = await takeTime();
                 await markProgressiveTransactions(periodos, progresivasQty);
+            } else {
+                tiempoInicioMarkProgressiveTransactions = tiempoInicioReadFile;
             }
             tiempoInicioScrapper = await takeTime();
             return scrapperChrome(url, user, pass, rut, periodos, bot, chatId, env);
