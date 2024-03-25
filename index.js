@@ -118,4 +118,8 @@ async function processPDF(chatId, fileName) {
         });
 }
 
-console.log('Bot is running...');
+(async () => {
+    for (const usr of permited_users.split(',')) {
+        await bot.sendMessage(usr, 'Bot is running...');
+    }
+})();
