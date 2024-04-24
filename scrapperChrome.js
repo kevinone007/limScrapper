@@ -69,7 +69,7 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId, env) 
         const fuera = await page.waitForSelector('#wrapper > div.main-panel.mega > div.rex-content.container-fluid > div > form > div.card-body > div:nth-child(4) > div:nth-child(3)');
         await fuera.click();
         await setTimeout(2000);
-        const guardarMovimiento = await page.waitForSelector('#wrapper > div.main-panel.mega > div.rex-content.container-fluid > div > form > div.card-footer.d-flex.flex-centered > input');
+        const guardarMovimiento = await page.waitForSelector('#submit-vacation');
         await guardarMovimiento.click();
         await page.waitForNavigation();
         let errorMessage
@@ -80,7 +80,7 @@ const scrapperChrome = async (url, user, pass, rut, periodos, bot, chatId, env) 
             });
 
             if(errorMessage){
-                const guardarMovimiento2 = await page.waitForSelector('#wrapper > div.main-panel.mega > div.rex-content.container-fluid > div > form > div.card-footer.d-flex.flex-centered > input');
+                const guardarMovimiento2 = await page.waitForSelector('#submit-vacation');
                 await guardarMovimiento2.click();
                 await page.waitForNavigation()
             }
